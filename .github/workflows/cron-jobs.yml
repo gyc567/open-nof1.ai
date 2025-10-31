@@ -56,6 +56,11 @@ jobs:
           # 安装 jsonwebtoken
           npm install jsonwebtoken
           
+          # 调试密钥信息
+          echo "🔐 密钥调试信息:"
+          echo "CRON_SECRET_KEY 长度: ${#CRON_SECRET_KEY}"
+          echo "CRON_SECRET_KEY 前10字符: ${CRON_SECRET_KEY:0:10}..."
+          
           # 生成JWT token
           JWT_TOKEN=$(node -e "
             const jwt = require('jsonwebtoken');
@@ -64,15 +69,30 @@ jobs:
               console.error('CRON_SECRET_KEY is empty');
               process.exit(1);
             }
+            
+            console.log('密钥长度:', secretKey.length);
+            console.log('密钥类型:', typeof secretKey);
+            console.log('密钥前10字符:', secretKey.substring(0, 10) + '...');
+            
             const token = jwt.sign(
-              { sub: 'github-actions-cron' },
+              { sub: 'github-actions-cron', iat: Math.floor(Date.now() / 1000) },
               secretKey,
               { expiresIn: '1h' }
             );
+            
+            // 验证生成的token
+            try {
+              const decoded = jwt.verify(token, secretKey);
+              console.log('Token验证成功:', decoded);
+            } catch (err) {
+              console.error('Token验证失败:', err.message);
+            }
+            
             console.log(token);
           ")
           
           echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
+          echo "JWT Token 长度: ${#JWT_TOKEN}"
           
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval"
@@ -136,6 +156,11 @@ jobs:
           # 安装 jsonwebtoken
           npm install jsonwebtoken
           
+          # 调试密钥信息
+          echo "🔐 密钥调试信息:"
+          echo "CRON_SECRET_KEY 长度: ${#CRON_SECRET_KEY}"
+          echo "CRON_SECRET_KEY 前10字符: ${CRON_SECRET_KEY:0:10}..."
+          
           # 生成JWT token
           JWT_TOKEN=$(node -e "
             const jwt = require('jsonwebtoken');
@@ -144,15 +169,30 @@ jobs:
               console.error('CRON_SECRET_KEY is empty');
               process.exit(1);
             }
+            
+            console.log('密钥长度:', secretKey.length);
+            console.log('密钥类型:', typeof secretKey);
+            console.log('密钥前10字符:', secretKey.substring(0, 10) + '...');
+            
             const token = jwt.sign(
-              { sub: 'github-actions-cron' },
+              { sub: 'github-actions-cron', iat: Math.floor(Date.now() / 1000) },
               secretKey,
               { expiresIn: '1h' }
             );
+            
+            // 验证生成的token
+            try {
+              const decoded = jwt.verify(token, secretKey);
+              console.log('Token验证成功:', decoded);
+            } catch (err) {
+              console.error('Token验证失败:', err.message);
+            }
+            
             console.log(token);
           ")
           
           echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
+          echo "JWT Token 长度: ${#JWT_TOKEN}"
           
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval"

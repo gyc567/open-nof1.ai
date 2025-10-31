@@ -38,6 +38,11 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ⚠️ **重要**: `CRON_SECRET_KEY` 必须在 GitHub 和 Vercel 中设置为相同的值！
 
+**设置步骤**:
+1. 进入 Vercel 项目设置 → Environment Variables
+2. 添加 `CRON_SECRET_KEY`，值必须与 GitHub Secrets 中的完全一致
+3. 确保应用到所有环境（Production, Preview, Development）
+
 ### 4. 定时任务配置
 
 当前配置了两个定时任务：
@@ -76,17 +81,22 @@ npm run test:github-actions
 
 如果 GitHub Actions 仍然失败：
 
-1. **验证 URL 格式**:
+1. **完整的认证调试**:
    ```bash
-   # 验证 NEXT_PUBLIC_URL 格式
+   # 设置环境变量（使用与 GitHub/Vercel 相同的值）
    export NEXT_PUBLIC_URL="https://your-app.vercel.app"
-   npm run validate:url
+   export CRON_SECRET_KEY="你的密钥"
+   
+   # 运行完整的认证调试
+   npm run debug:auth
    ```
 
-2. **验证密钥格式**:
+2. **分步验证**:
    ```bash
-   # 本地测试JWT生成
-   export CRON_SECRET_KEY="你的密钥"
+   # 验证 URL 格式
+   npm run validate:url
+   
+   # 验证 JWT 生成
    npm run test:jwt
    ```
 
@@ -100,9 +110,15 @@ npm run test:github-actions
    - ❌ 错误：`your-app.vercel.app`（缺少协议）
    - ✅ 正确：`https://your-app.vercel.app`
 
-5. **查看GitHub Actions日志**:
-   - 现在会显示更详细的错误信息
-   - 包括 URL 验证、JWT token 生成状态和 API 调用结果
+5. **密钥同步问题**:
+   - ❌ 最常见问题：GitHub 和 Vercel 中的 `CRON_SECRET_KEY` 不一致
+   - ✅ 解决方案：重新生成密钥，同时更新 GitHub Secrets 和 Vercel 环境变量
+   - ⚠️ 注意：复制粘贴时避免额外的空格或换行符
+
+6. **查看GitHub Actions日志**:
+   - 现在会显示密钥长度、前缀等调试信息
+   - 包括 JWT token 本地验证结果
+   - 显示完整的 curl 请求和响应
 
 ## 架构优势
 
