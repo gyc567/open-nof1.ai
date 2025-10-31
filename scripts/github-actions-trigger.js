@@ -29,10 +29,13 @@ async function triggerFromGitHubActions() {
   console.log('📍 目标URL:', baseUrl);
 
   try {
+    // 对 JWT token 进行 URL 编码
+    const encodedToken = encodeURIComponent(token);
+    
     // 1. 触发指标收集
     console.log('\n📊 触发指标收集...');
     const metricsResponse = await fetch(
-      `${baseUrl}/api/cron/20-seconds-metrics-interval?token=${token}`,
+      `${baseUrl}/api/cron/20-seconds-metrics-interval?token=${encodedToken}`,
       { method: 'GET' }
     );
     
@@ -49,7 +52,7 @@ async function triggerFromGitHubActions() {
     // 2. 触发交易分析
     console.log('\n🤖 触发AI交易分析...');
     const tradingResponse = await fetch(
-      `${baseUrl}/api/cron/3-minutes-run-interval?token=${token}`,
+      `${baseUrl}/api/cron/3-minutes-run-interval?token=${encodedToken}`,
       { method: 'GET' }
     );
     

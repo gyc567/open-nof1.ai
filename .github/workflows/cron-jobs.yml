@@ -97,9 +97,13 @@ jobs:
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval"
           
+          # 对 JWT token 进行 URL 编码
+          ENCODED_TOKEN=$(node -e "console.log(encodeURIComponent('${JWT_TOKEN}'))")
+          
           # 构建完整的 URL
-          FULL_URL="${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}"
+          FULL_URL="${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval?token=${ENCODED_TOKEN}"
           echo "完整URL长度: ${#FULL_URL}"
+          echo "URL编码后的Token长度: ${#ENCODED_TOKEN}"
           
           # 使用更安全的 curl 调用
           curl -X GET \
@@ -197,9 +201,13 @@ jobs:
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval"
           
+          # 对 JWT token 进行 URL 编码
+          ENCODED_TOKEN=$(node -e "console.log(encodeURIComponent('${JWT_TOKEN}'))")
+          
           # 构建完整的 URL
-          FULL_URL="${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}"
+          FULL_URL="${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval?token=${ENCODED_TOKEN}"
           echo "完整URL长度: ${#FULL_URL}"
+          echo "URL编码后的Token长度: ${#ENCODED_TOKEN}"
           
           # 使用更安全的 curl 调用
           curl -X GET \
