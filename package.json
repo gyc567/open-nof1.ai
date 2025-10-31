@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test:cron": "node scripts/test-cron-endpoints.js",
     "test:github-actions": "node scripts/github-actions-trigger.js",
-    "trigger:data": "node scripts/manual-trigger.js"
+    "trigger:data": "node scripts/manual-trigger.js",
+    "generate:secret": "node scripts/generate-cron-secret.js"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.23",

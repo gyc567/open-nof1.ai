@@ -122,6 +122,15 @@ DATABASE_URL=postgresql://username:password@host:port/database
 CRON_SECRET_KEY=your-random-secret-key-for-cron-jobs
 ```
 
+**生成安全密钥**:
+```bash
+# 使用项目脚本
+npm run generate:secret
+
+# 或手动生成
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
 ### 步骤4: 数据库设置
 
 #### 选项A: 使用Neon (推荐)

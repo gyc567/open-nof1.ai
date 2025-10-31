@@ -6,15 +6,27 @@
 
 ## 设置步骤
 
-### 1. 在GitHub仓库中设置Secrets
+### 1. 生成 CRON_SECRET_KEY
+
+首先生成一个安全的密钥：
+
+```bash
+# 使用项目脚本生成
+npm run generate:secret
+
+# 或者手动生成
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+### 2. 在GitHub仓库中设置Secrets
 
 在GitHub仓库的 Settings → Secrets and variables → Actions 中添加以下环境变量：
 
 #### 🔑 必需的Secrets
 - `DATABASE_URL`: 数据库连接字符串
-- `CRON_SECRET_KEY`: Cron认证密钥（与之前Vercel中的相同）
-- `NEXT_PUBLIC_URL`: 你的应用部署URL
-- `START_MONEY`: 起始资金金额
+- `CRON_SECRET_KEY`: 上面生成的Cron认证密钥
+- `NEXT_PUBLIC_URL`: 你的应用部署URL (如: https://your-app.vercel.app)
+- `START_MONEY`: 起始资金金额 (如: 30)
 
 #### 🤖 AI和交易API密钥
 - `DEEPSEEK_API_KEY`: DeepSeek AI API密钥
@@ -22,14 +34,18 @@
 - `BINANCE_API_SECRET`: Binance API密钥
 - `BINANCE_USE_SANDBOX`: 是否使用测试环境 (true/false)
 
-### 2. 定时任务配置
+### 3. 在Vercel中设置相同的环境变量
+
+⚠️ **重要**: `CRON_SECRET_KEY` 必须在 GitHub 和 Vercel 中设置为相同的值！
+
+### 4. 定时任务配置
 
 当前配置了两个定时任务：
 
 - **20秒指标收集**：每1分钟执行一次
 - **3分钟交易执行**：每3分钟执行一次
 
-### 3. 手动测试
+### 5. 手动测试
 
 你可以手动触发工作流进行测试：
 
@@ -37,7 +53,7 @@
 2. 选择 "Trading Cron Jobs" 工作流
 3. 点击 "Run workflow" 按钮
 
-### 4. 本地测试
+### 6. 本地测试
 
 使用以下命令进行本地测试：
 

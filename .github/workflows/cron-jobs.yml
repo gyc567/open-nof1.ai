@@ -21,6 +21,19 @@ jobs:
         with:
           node-version: '20'
           
+      - name: 验证环境变量
+        run: |
+          echo "检查必需的环境变量..."
+          if [ -z "${{ secrets.CRON_SECRET_KEY }}" ]; then
+            echo "❌ CRON_SECRET_KEY 未设置"
+            exit 1
+          fi
+          if [ -z "${{ secrets.NEXT_PUBLIC_URL }}" ]; then
+            echo "❌ NEXT_PUBLIC_URL 未设置"
+            exit 1
+          fi
+          echo "✅ 环境变量检查通过"
+          
       - name: 生成JWT Token并执行指标收集
         run: |
           # 安装 jsonwebtoken
@@ -29,18 +42,27 @@ jobs:
           # 生成JWT token
           JWT_TOKEN=$(node -e "
             const jwt = require('jsonwebtoken');
+            const secretKey = '${{ secrets.CRON_SECRET_KEY }}';
+            if (!secretKey) {
+              console.error('CRON_SECRET_KEY is empty');
+              process.exit(1);
+            }
             const token = jwt.sign(
               { sub: 'github-actions-cron' },
-              '${{ secrets.CRON_SECRET_KEY }}',
+              secretKey,
               { expiresIn: '1h' }
             );
             console.log(token);
           ")
           
+          echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
+          
           # 调用API
+          echo "调用API: ${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval"
           curl -X GET \
             "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
+            -w "\nHTTP Status: %{http_code}\n"
 
   run-interval:
     name: 3分钟交易执行
@@ -53,6 +75,19 @@ jobs:
         with:
           node-version: '20'
           
+      - name: 验证环境变量
+        run: |
+          echo "检查必需的环境变量..."
+          if [ -z "${{ secrets.CRON_SECRET_KEY }}" ]; then
+            echo "❌ CRON_SECRET_KEY 未设置"
+            exit 1
+          fi
+          if [ -z "${{ secrets.NEXT_PUBLIC_URL }}" ]; then
+            echo "❌ NEXT_PUBLIC_URL 未设置"
+            exit 1
+          fi
+          echo "✅ 环境变量检查通过"
+          
       - name: 生成JWT Token并执行交易逻辑
         run: |
           # 安装 jsonwebtoken
@@ -61,15 +96,24 @@ jobs:
           # 生成JWT token
           JWT_TOKEN=$(node -e "
             const jwt = require('jsonwebtoken');
+            const secretKey = '${{ secrets.CRON_SECRET_KEY }}';
+            if (!secretKey) {
+              console.error('CRON_SECRET_KEY is empty');
+              process.exit(1);
+            }
             const token = jwt.sign(
               { sub: 'github-actions-cron' },
-              '${{ secrets.CRON_SECRET_KEY }}',
+              secretKey,
               { expiresIn: '1h' }
             );
             console.log(token);
           ")
           
+          echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
+          
           # 调用API
+          echo "调用API: ${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval"
           curl -X GET \
             "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
+            -w "\nHTTP Status: %{http_code}\n"
