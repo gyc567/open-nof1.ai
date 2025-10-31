@@ -94,11 +94,19 @@ jobs:
           echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
           echo "JWT Token 长度: ${#JWT_TOKEN}"
           
+          # 将 JWT token 保存到临时文件，避免 shell 变量传递问题
+          echo "${JWT_TOKEN}" > /tmp/jwt_token.txt
+          echo "✅ JWT token 已保存到临时文件"
+          
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval"
           
-          # 对 JWT token 进行 URL 编码
-          ENCODED_TOKEN=$(node -e "console.log(encodeURIComponent('${JWT_TOKEN}'))")
+          # 对 JWT token 进行 URL 编码 - 使用更安全的方式
+          ENCODED_TOKEN=$(node -e "
+            const fs = require('fs');
+            const token = fs.readFileSync('/tmp/jwt_token.txt', 'utf8').trim();
+            console.log(encodeURIComponent(token));
+          ")
           
           # 构建完整的 URL
           FULL_URL="${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval?token=${ENCODED_TOKEN}"
@@ -198,11 +206,19 @@ jobs:
           echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
           echo "JWT Token 长度: ${#JWT_TOKEN}"
           
+          # 将 JWT token 保存到临时文件，避免 shell 变量传递问题
+          echo "${JWT_TOKEN}" > /tmp/jwt_token.txt
+          echo "✅ JWT token 已保存到临时文件"
+          
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval"
           
-          # 对 JWT token 进行 URL 编码
-          ENCODED_TOKEN=$(node -e "console.log(encodeURIComponent('${JWT_TOKEN}'))")
+          # 对 JWT token 进行 URL 编码 - 使用更安全的方式
+          ENCODED_TOKEN=$(node -e "
+            const fs = require('fs');
+            const token = fs.readFileSync('/tmp/jwt_token.txt', 'utf8').trim();
+            console.log(encodeURIComponent(token));
+          ")
           
           # 构建完整的 URL
           FULL_URL="${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval?token=${ENCODED_TOKEN}"
