@@ -1,0 +1,77 @@
+name: Trading Cron Jobs
+
+on:
+  schedule:
+    # 20秒指标收集 - 每1分钟执行一次
+    - cron: '*/1 * * * *'
+    # 3分钟交易执行 - 每3分钟执行一次  
+    - cron: '*/3 * * * *'
+  # 允许手动触发用于测试
+  workflow_dispatch:
+
+jobs:
+  metrics-interval:
+    name: 20秒指标收集
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' && github.event.schedule == '*/1 * * * *'
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: 安装依赖
+        run: npm ci
+        
+      - name: 生成环境变量
+        run: |
+          cat > .env << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          CRON_SECRET_KEY=${{ secrets.CRON_SECRET_KEY }}
+          NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
+          START_MONEY=${{ secrets.START_MONEY }}
+          EOF
+          
+      - name: 执行指标收集
+        run: |
+          curl -X GET \
+            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval?token=${{ secrets.CRON_SECRET_KEY }}" \
+            -H "Content-Type: application/json"
+
+  run-interval:
+    name: 3分钟交易执行
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' && github.event.schedule == '*/3 * * * *'
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: 安装依赖
+        run: npm ci
+        
+      - name: 生成环境变量
+        run: |
+          cat > .env << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          CRON_SECRET_KEY=${{ secrets.CRON_SECRET_KEY }}
+          NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
+          START_MONEY=${{ secrets.START_MONEY }}
+          EOF
+          
+      - name: 执行交易逻辑
+        run: |
+          curl -X GET \
+            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval?token=${{ secrets.CRON_SECRET_KEY }}" \
+            -H "Content-Type: application/json"

@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:cron": "node scripts/test-cron-endpoints.js"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.23",
