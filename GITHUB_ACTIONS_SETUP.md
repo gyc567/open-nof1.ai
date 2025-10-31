@@ -76,20 +76,33 @@ npm run test:github-actions
 
 如果 GitHub Actions 仍然失败：
 
-1. **验证密钥格式**:
+1. **验证 URL 格式**:
+   ```bash
+   # 验证 NEXT_PUBLIC_URL 格式
+   export NEXT_PUBLIC_URL="https://your-app.vercel.app"
+   npm run validate:url
+   ```
+
+2. **验证密钥格式**:
    ```bash
    # 本地测试JWT生成
    export CRON_SECRET_KEY="你的密钥"
    npm run test:jwt
    ```
 
-2. **检查GitHub Secrets**:
+3. **检查GitHub Secrets**:
+   - 确保 `NEXT_PUBLIC_URL` 格式正确（如：`https://your-app.vercel.app`）
    - 确保 `CRON_SECRET_KEY` 没有多余的空格或换行
-   - 重新生成并设置密钥
+   - 不要在 URL 末尾添加斜杠
 
-3. **查看GitHub Actions日志**:
+4. **常见 URL 问题**:
+   - ❌ 错误：`http://your-app.vercel.app/`（末尾有斜杠）
+   - ❌ 错误：`your-app.vercel.app`（缺少协议）
+   - ✅ 正确：`https://your-app.vercel.app`
+
+5. **查看GitHub Actions日志**:
    - 现在会显示更详细的错误信息
-   - 包括JWT token生成状态和API调用结果
+   - 包括 URL 验证、JWT token 生成状态和 API 调用结果
 
 ## 架构优势
 

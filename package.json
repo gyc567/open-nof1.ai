@@ -10,6 +10,7 @@
     "test:cron": "node scripts/test-cron-endpoints.js",
     "test:github-actions": "node scripts/github-actions-trigger.js",
     "test:jwt": "node scripts/test-jwt-generation.js",
+    "validate:url": "node scripts/validate-url.js",
     "trigger:data": "node scripts/manual-trigger.js",
     "generate:secret": "node scripts/generate-cron-secret.js"
   },

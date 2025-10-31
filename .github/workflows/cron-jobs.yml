@@ -22,6 +22,8 @@ jobs:
           node-version: '20'
           
       - name: 验证环境变量
+        env:
+          NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
         run: |
           echo "检查必需的环境变量..."
           if [ -z "${{ secrets.CRON_SECRET_KEY }}" ]; then
@@ -32,7 +34,19 @@ jobs:
             echo "❌ NEXT_PUBLIC_URL 未设置"
             exit 1
           fi
+          
           echo "✅ 环境变量检查通过"
+          echo "🔍 调试信息:"
+          echo "NEXT_PUBLIC_URL 长度: ${#NEXT_PUBLIC_URL}"
+          echo "NEXT_PUBLIC_URL 内容: '${NEXT_PUBLIC_URL}'"
+          
+          # 验证 URL 格式
+          if [[ ! "$NEXT_PUBLIC_URL" =~ ^https?:// ]]; then
+            echo "❌ NEXT_PUBLIC_URL 格式错误，必须以 http:// 或 https:// 开头"
+            exit 1
+          fi
+          
+          echo "✅ URL 格式验证通过"
           
       - name: 生成JWT Token并执行指标收集
         env:
@@ -62,10 +76,19 @@ jobs:
           
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval"
+          
+          # 构建完整的 URL
+          FULL_URL="${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}"
+          echo "完整URL长度: ${#FULL_URL}"
+          
+          # 使用更安全的 curl 调用
           curl -X GET \
-            "${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}" \
+            --url "${FULL_URL}" \
             -H "Content-Type: application/json" \
-            -w "\nHTTP Status: %{http_code}\n"
+            -H "User-Agent: GitHub-Actions/1.0" \
+            --fail-with-body \
+            -w "\nHTTP Status: %{http_code}\nResponse Time: %{time_total}s\n" \
+            -v
 
   run-interval:
     name: 3分钟交易执行
@@ -79,6 +102,8 @@ jobs:
           node-version: '20'
           
       - name: 验证环境变量
+        env:
+          NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
         run: |
           echo "检查必需的环境变量..."
           if [ -z "${{ secrets.CRON_SECRET_KEY }}" ]; then
@@ -89,7 +114,19 @@ jobs:
             echo "❌ NEXT_PUBLIC_URL 未设置"
             exit 1
           fi
+          
           echo "✅ 环境变量检查通过"
+          echo "🔍 调试信息:"
+          echo "NEXT_PUBLIC_URL 长度: ${#NEXT_PUBLIC_URL}"
+          echo "NEXT_PUBLIC_URL 内容: '${NEXT_PUBLIC_URL}'"
+          
+          # 验证 URL 格式
+          if [[ ! "$NEXT_PUBLIC_URL" =~ ^https?:// ]]; then
+            echo "❌ NEXT_PUBLIC_URL 格式错误，必须以 http:// 或 https:// 开头"
+            exit 1
+          fi
+          
+          echo "✅ URL 格式验证通过"
           
       - name: 生成JWT Token并执行交易逻辑
         env:
@@ -119,7 +156,16 @@ jobs:
           
           # 调用API
           echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval"
+          
+          # 构建完整的 URL
+          FULL_URL="${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}"
+          echo "完整URL长度: ${#FULL_URL}"
+          
+          # 使用更安全的 curl 调用
           curl -X GET \
-            "${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}" \
+            --url "${FULL_URL}" \
             -H "Content-Type: application/json" \
-            -w "\nHTTP Status: %{http_code}\n"
+            -H "User-Agent: GitHub-Actions/1.0" \
+            --fail-with-body \
+            -w "\nHTTP Status: %{http_code}\nResponse Time: %{time_total}s\n" \
+            -v
