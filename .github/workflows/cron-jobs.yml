@@ -35,12 +35,28 @@ jobs:
           CRON_SECRET_KEY=${{ secrets.CRON_SECRET_KEY }}
           NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
           START_MONEY=${{ secrets.START_MONEY }}
+          DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}
+          BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}
+          BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }}
+          BINANCE_USE_SANDBOX=${{ secrets.BINANCE_USE_SANDBOX }}
           EOF
           
-      - name: 执行指标收集
+      - name: 生成JWT Token并执行指标收集
         run: |
+          # 生成JWT token
+          JWT_TOKEN=$(node -e "
+            const jwt = require('jsonwebtoken');
+            const token = jwt.sign(
+              { sub: 'github-actions-cron' },
+              '${{ secrets.CRON_SECRET_KEY }}',
+              { expiresIn: '1h' }
+            );
+            console.log(token);
+          ")
+          
+          # 调用API
           curl -X GET \
-            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval?token=${{ secrets.CRON_SECRET_KEY }}" \
+            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}" \
             -H "Content-Type: application/json"
 
   run-interval:
@@ -68,10 +84,26 @@ jobs:
           CRON_SECRET_KEY=${{ secrets.CRON_SECRET_KEY }}
           NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
           START_MONEY=${{ secrets.START_MONEY }}
+          DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}
+          BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}
+          BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }}
+          BINANCE_USE_SANDBOX=${{ secrets.BINANCE_USE_SANDBOX }}
           EOF
           
-      - name: 执行交易逻辑
+      - name: 生成JWT Token并执行交易逻辑
         run: |
+          # 生成JWT token
+          JWT_TOKEN=$(node -e "
+            const jwt = require('jsonwebtoken');
+            const token = jwt.sign(
+              { sub: 'github-actions-cron' },
+              '${{ secrets.CRON_SECRET_KEY }}',
+              { expiresIn: '1h' }
+            );
+            console.log(token);
+          ")
+          
+          # 调用API
           curl -X GET \
-            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval?token=${{ secrets.CRON_SECRET_KEY }}" \
+            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}" \
             -H "Content-Type: application/json"

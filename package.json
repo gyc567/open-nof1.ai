@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:cron": "node scripts/test-cron-endpoints.js"
+    "test:cron": "node scripts/test-cron-endpoints.js",
+    "test:github-actions": "node scripts/github-actions-trigger.js",
+    "trigger:data": "node scripts/manual-trigger.js"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.23",

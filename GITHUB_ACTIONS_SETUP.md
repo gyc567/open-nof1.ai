@@ -10,10 +10,17 @@
 
 在GitHub仓库的 Settings → Secrets and variables → Actions 中添加以下环境变量：
 
+#### 🔑 必需的Secrets
 - `DATABASE_URL`: 数据库连接字符串
 - `CRON_SECRET_KEY`: Cron认证密钥（与之前Vercel中的相同）
 - `NEXT_PUBLIC_URL`: 你的应用部署URL
 - `START_MONEY`: 起始资金金额
+
+#### 🤖 AI和交易API密钥
+- `DEEPSEEK_API_KEY`: DeepSeek AI API密钥
+- `BINANCE_API_KEY`: Binance API密钥
+- `BINANCE_API_SECRET`: Binance API密钥
+- `BINANCE_USE_SANDBOX`: 是否使用测试环境 (true/false)
 
 ### 2. 定时任务配置
 
@@ -41,6 +48,9 @@ export CRON_SECRET_KEY="你的Cron密钥"
 
 # 运行测试
 npm run test:cron
+
+# 或者测试GitHub Actions兼容的方式
+npm run test:github-actions
 ```
 
 ## 架构优势

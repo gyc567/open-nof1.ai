@@ -94,7 +94,7 @@ Open-nof1.ai是一个AI驱动的加密货币交易平台，具有以下特点：
 
 #### 🌐 应用基础配置
 ```bash
-NEXT_PUBLIC_URL=https://your-project-name.vercel.app
+NEXT_PUBLIC_URL=https://open-nof1-ai-beta.vercel.app
 ```
 
 #### 🤖 AI模型配置
@@ -152,29 +152,25 @@ CRON_SECRET_KEY=your-random-secret-key-for-cron-jobs
    - 在Vercel仪表板查看部署日志
    - 确保没有构建错误
 
-### 步骤6: 设置定时任务 (Cron Jobs)
+### 步骤6: 设置GitHub Actions定时任务
 
-项目需要定时任务来收集数据和执行交易：
+项目使用GitHub Actions来执行定时任务，而不是Vercel的cron功能：
 
-1. **在项目根目录创建vercel.json**
-   ```json
-   {
-     "crons": [
-       {
-         "path": "/api/cron/20-seconds-metrics-interval",
-         "schedule": "*/1 * * * *"
-       },
-       {
-         "path": "/api/cron/3-minutes-run-interval", 
-         "schedule": "*/3 * * * *"
-       }
-     ]
-   }
-   ```
+1. **GitHub Actions已经配置好**
+   - 项目中的`.github/workflows/cron-jobs.yml`已经配置了定时任务
+   - 每1分钟收集指标数据
+   - 每3分钟执行AI交易分析
 
-2. **重新部署**
-   - 提交vercel.json到GitHub
-   - Vercel会自动重新部署并启用定时任务
+2. **配置GitHub Secrets**
+   在GitHub仓库设置中添加以下Secrets：
+   - `NEXT_PUBLIC_URL`: 你的Vercel部署URL
+   - `CRON_SECRET_KEY`: 定时任务认证密钥
+   - `DATABASE_URL`: 数据库连接字符串
+   - `START_MONEY`: 初始资金金额
+
+3. **启用GitHub Actions**
+   - GitHub Actions会在代码推送后自动启用
+   - 定时任务会按照设定的时间自动执行
 
 ## ✅ 部署后验证
 
@@ -281,9 +277,10 @@ bun run build
 **错误**: 数据不更新或交易不执行
 
 **解决方案**:
-1. 检查vercel.json文件是否正确提交
-2. 验证CRON_SECRET_KEY是否设置
-3. 在Vercel仪表板查看Cron Jobs状态
+1. 检查GitHub Actions是否启用
+2. 验证GitHub Secrets中的环境变量是否正确设置
+3. 在GitHub仓库的"Actions"标签页查看定时任务执行日志
+4. 确保CRON_SECRET_KEY在GitHub Secrets中正确配置
 
 ## ⚠️ 重要安全提醒
 
@@ -323,7 +320,52 @@ bun run build
 
 ## 🎉 部署完成！
 
-恭喜！你已经成功将Open-nof1.ai部署到Vercel。现在你可以：
+恭喜！你已经成功将Open-nof1.ai部署到Vercel。
+
+### 🔧 首次部署后的数据初始化
+
+**重要**: 首次部署后，网站可能显示"Loading metrics..."，这是因为还没有数据。你需要手动触发一次数据收集：
+
+#### 方法1: 使用脚本（推荐）
+
+1. **在本地运行触发脚本**:
+   ```bash
+   # 设置环境变量
+   export NEXT_PUBLIC_URL="https://your-project.vercel.app"
+   export CRON_SECRET_KEY="your-cron-secret-key"
+   
+   # 运行触发脚本
+   node scripts/manual-trigger.js
+   ```
+
+#### 方法2: 手动调用API
+
+1. **生成认证token**:
+   ```bash
+   # 使用你的 CRON_SECRET_KEY 生成 JWT token
+   # 可以使用在线JWT生成器，payload: {"sub": "manual"}
+   ```
+
+2. **调用API端点**:
+   ```bash
+   # 触发指标收集
+   curl "https://your-project.vercel.app/api/cron/20-seconds-metrics-interval?token=YOUR_JWT_TOKEN"
+   
+   # 触发交易分析
+   curl "https://your-project.vercel.app/api/cron/3-minutes-run-interval?token=YOUR_JWT_TOKEN"
+   ```
+
+#### 方法3: 等待GitHub Actions自动执行
+
+GitHub Actions定时任务会自动开始收集数据：
+- 每1分钟收集一次指标数据
+- 每3分钟执行一次AI交易分析
+
+你可以在GitHub仓库的"Actions"标签页查看定时任务的执行状态。
+
+### ✅ 验证部署成功
+
+现在你可以：
 
 - 📊 实时查看加密货币价格
 - 🤖 观察AI的交易决策过程
