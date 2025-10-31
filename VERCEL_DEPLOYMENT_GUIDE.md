@@ -217,7 +217,34 @@ curl -X POST https://your-project-name.vercel.app/api/cron/20-seconds-metrics-in
 
 ## 🔧 常见问题解决
 
-### 问题1: 构建失败
+### 问题1: Turbopack构建错误
+
+**错误**: `thread 'tokio-runtime-worker' panicked at turbopack/crates/turbopack-ecmascript/src/lib.rs`
+
+**解决方案**:
+这是Turbopack在生产构建时的已知问题，需要禁用Turbopack：
+
+1. **修改package.json构建脚本**:
+   ```json
+   {
+     "scripts": {
+       "build": "next build"  // 移除 --turbopack 参数
+     }
+   }
+   ```
+
+2. **更新next.config.ts**:
+   ```typescript
+   const nextConfig: NextConfig = {
+     experimental: {
+       turbo: false,  // 禁用turbopack
+     },
+   };
+   ```
+
+3. **重新部署项目**
+
+### 问题2: 模块依赖问题
 
 **错误**: `Module not found` 或依赖问题
 
@@ -231,7 +258,7 @@ bun run build
 # 确保所有依赖都在dependencies中，而不是devDependencies
 ```
 
-### 问题2: 数据库连接失败
+### 问题3: 数据库连接失败
 
 **错误**: `Can't reach database server`
 
@@ -240,7 +267,7 @@ bun run build
 2. 确保数据库服务器允许外部连接
 3. 运行`bunx prisma db push`初始化数据库结构
 
-### 问题3: API密钥错误
+### 问题4: API密钥错误
 
 **错误**: `Unauthorized` 或 `Invalid API key`
 
@@ -249,7 +276,7 @@ bun run build
 2. 确保Binance API有足够权限(现货交易)
 3. 检查DeepSeek API余额是否充足
 
-### 问题4: 定时任务不工作
+### 问题5: 定时任务不工作
 
 **错误**: 数据不更新或交易不执行
 

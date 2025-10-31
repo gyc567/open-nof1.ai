@@ -1,0 +1,13 @@
+{
+  "buildCommand": "next build",
+  "crons": [
+    {
+      "path": "/api/cron/20-seconds-metrics-interval",
+      "schedule": "*/1 * * * *"
+    },
+    {
+      "path": "/api/cron/3-minutes-run-interval", 
+      "schedule": "*/3 * * * *"
+    }
+  ]
+}
