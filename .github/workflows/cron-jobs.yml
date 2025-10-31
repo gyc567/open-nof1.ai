@@ -35,6 +35,9 @@ jobs:
           echo "✅ 环境变量检查通过"
           
       - name: 生成JWT Token并执行指标收集
+        env:
+          CRON_SECRET_KEY: ${{ secrets.CRON_SECRET_KEY }}
+          NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
         run: |
           # 安装 jsonwebtoken
           npm install jsonwebtoken
@@ -42,7 +45,7 @@ jobs:
           # 生成JWT token
           JWT_TOKEN=$(node -e "
             const jwt = require('jsonwebtoken');
-            const secretKey = '${{ secrets.CRON_SECRET_KEY }}';
+            const secretKey = process.env.CRON_SECRET_KEY;
             if (!secretKey) {
               console.error('CRON_SECRET_KEY is empty');
               process.exit(1);
@@ -58,9 +61,9 @@ jobs:
           echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
           
           # 调用API
-          echo "调用API: ${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval"
+          echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval"
           curl -X GET \
-            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}" \
+            "${NEXT_PUBLIC_URL}/api/cron/20-seconds-metrics-interval?token=${JWT_TOKEN}" \
             -H "Content-Type: application/json" \
             -w "\nHTTP Status: %{http_code}\n"
 
@@ -89,6 +92,9 @@ jobs:
           echo "✅ 环境变量检查通过"
           
       - name: 生成JWT Token并执行交易逻辑
+        env:
+          CRON_SECRET_KEY: ${{ secrets.CRON_SECRET_KEY }}
+          NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
         run: |
           # 安装 jsonwebtoken
           npm install jsonwebtoken
@@ -96,7 +102,7 @@ jobs:
           # 生成JWT token
           JWT_TOKEN=$(node -e "
             const jwt = require('jsonwebtoken');
-            const secretKey = '${{ secrets.CRON_SECRET_KEY }}';
+            const secretKey = process.env.CRON_SECRET_KEY;
             if (!secretKey) {
               console.error('CRON_SECRET_KEY is empty');
               process.exit(1);
@@ -112,8 +118,8 @@ jobs:
           echo "生成的JWT Token: ${JWT_TOKEN:0:20}..."
           
           # 调用API
-          echo "调用API: ${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval"
+          echo "调用API: ${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval"
           curl -X GET \
-            "${{ secrets.NEXT_PUBLIC_URL }}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}" \
+            "${NEXT_PUBLIC_URL}/api/cron/3-minutes-run-interval?token=${JWT_TOKEN}" \
             -H "Content-Type: application/json" \
             -w "\nHTTP Status: %{http_code}\n"

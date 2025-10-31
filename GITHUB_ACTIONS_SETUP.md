@@ -62,12 +62,34 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 export NEXT_PUBLIC_URL="你的应用URL"
 export CRON_SECRET_KEY="你的Cron密钥"
 
-# 运行测试
+# 测试JWT生成（推荐先运行这个）
+npm run test:jwt
+
+# 运行完整测试
 npm run test:cron
 
 # 或者测试GitHub Actions兼容的方式
 npm run test:github-actions
 ```
+
+### 7. 故障排除步骤
+
+如果 GitHub Actions 仍然失败：
+
+1. **验证密钥格式**:
+   ```bash
+   # 本地测试JWT生成
+   export CRON_SECRET_KEY="你的密钥"
+   npm run test:jwt
+   ```
+
+2. **检查GitHub Secrets**:
+   - 确保 `CRON_SECRET_KEY` 没有多余的空格或换行
+   - 重新生成并设置密钥
+
+3. **查看GitHub Actions日志**:
+   - 现在会显示更详细的错误信息
+   - 包括JWT token生成状态和API调用结果
 
 ## 架构优势
 
