@@ -27,7 +27,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.18",
-    "exa-js": "^1.10.2",
     "https-proxy-agent": "^7.0.6",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.546.0",
