@@ -76,6 +76,8 @@ const nextConfig: NextConfig = {
   // 仅导入实际使用的组件，减少bundle大小
   experimental: {
     optimizePackageImports: ['lucide-react', 'recharts'],
+    // 禁用Turbopack，确保与Vercel构建一致
+    turbo: false,
   },
 };
 
