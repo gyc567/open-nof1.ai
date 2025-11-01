@@ -104,7 +104,7 @@ interface StandardizedPrice {
 /**
  * 验证价格数据是否有效
  */
-function isValidPriceData(data: any): boolean {
+function isValidPriceData(data: unknown): boolean {
   return (
     data &&
     typeof data.lastPrice === "string" &&

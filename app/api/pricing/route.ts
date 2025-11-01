@@ -134,9 +134,9 @@ const MOCK_PRICING = {
  * 将聚合器数据转换为标准响应格式
  */
 function transformAggregatedData(
-  aggregatedData: any,
+  aggregatedData: Record<string, unknown>,
   source: string
-): any {
+): Record<string, unknown> {
   const { btc, eth, sol, bnb, doge } = aggregatedData;
 
   return {
