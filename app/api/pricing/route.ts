@@ -137,7 +137,7 @@ function transformAggregatedData(
   aggregatedData: Record<string, unknown>,
   source: string
 ): Record<string, unknown> {
-  const { btc, eth, sol, bnb, doge } = aggregatedData;
+  const { btc, eth, sol, bnb, doge } = aggregatedData as Record<string, any>;
 
   return {
     btc: {
