@@ -324,11 +324,11 @@ export const GET = async () => {
     console.log("\n✅ Successfully fetched aggregated prices:");
     console.log(`   Data Source: ${aggregatedData.source}`);
     console.log(`   Latency: ${latency}ms`);
-    console.log(`   BTC: $${pricing.btc.current_price.toLocaleString()}`);
-    console.log(`   ETH: $${pricing.eth.current_price.toLocaleString()}`);
-    console.log(`   SOL: $${pricing.sol.current_price.toFixed(2)}`);
-    console.log(`   BNB: $${pricing.bnb.current_price.toFixed(2)}`);
-    console.log(`   DOGE: $${pricing.doge.current_price.toFixed(4)}`);
+    console.log(`   BTC: $${(pricing as any).btc.current_price.toLocaleString()}`);
+    console.log(`   ETH: $${(pricing as any).eth.current_price.toLocaleString()}`);
+    console.log(`   SOL: $${(pricing as any).sol.current_price.toFixed(2)}`);
+    console.log(`   BNB: $${(pricing as any).bnb.current_price.toFixed(2)}`);
+    console.log(`   DOGE: $${(pricing as any).doge.current_price.toFixed(4)}`);
     
     // 获取健康状态
     const healthStatus = priceAggregator.getHealthStatus();
