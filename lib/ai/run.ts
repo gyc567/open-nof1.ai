@@ -6,6 +6,8 @@ import { deepseekR1 } from "./model";
 import { getAccountInformationAndPerformance } from "../trading/account-information-and-performance";
 import { prisma } from "../prisma";
 import { Opeartion, Symbol } from "@prisma/client";
+import { buy } from "../trading/buy";
+import { sell } from "../trading/sell";
 
 /**
  * you can interval trading using cron job
@@ -73,7 +75,15 @@ export async function run(initialCapital: number) {
     }),
   });
 
-  if (object.opeartion === Opeartion.Buy) {
+  if (object.opeartion === Opeartion.Buy && object.buy) {
+    const buyResult = await buy({
+      symbol: "BTC",
+      amount: object.buy.amount,
+      leverage: object.buy.leverage,
+      stopLoss: object.adjustProfit?.stopLoss,
+      takeProfit: object.adjustProfit?.takeProfit,
+    });
+
     await prisma.chat.create({
       data: {
         reasoning: reasoning || "<no reasoning>",
@@ -84,17 +94,26 @@ export async function run(initialCapital: number) {
             data: {
               symbol: Symbol.BTC,
               opeartion: object.opeartion,
-              pricing: object.buy?.pricing,
-              amount: object.buy?.amount,
+              pricing: buyResult.price || object.buy?.pricing,
+              amount: buyResult.amount || object.buy?.amount,
               leverage: object.buy?.leverage,
             },
           },
         },
       },
     });
+
+    return buyResult;
   }
 
   if (object.opeartion === Opeartion.Sell) {
+    const sellResult = await sell({
+      symbol: "BTC",
+      percentage: object.sell?.percentage || 100,
+      stopLoss: object.adjustProfit?.stopLoss,
+      takeProfit: object.adjustProfit?.takeProfit,
+    });
+
     await prisma.chat.create({
       data: {
         reasoning: reasoning || "<no reasoning>",
@@ -105,11 +124,15 @@ export async function run(initialCapital: number) {
             data: {
               symbol: Symbol.BTC,
               opeartion: object.opeartion,
+              pricing: sellResult.price,
+              amount: sellResult.amount,
             },
           },
         },
       },
     });
+
+    return sellResult;
   }
 
   if (object.opeartion === Opeartion.Hold) {
