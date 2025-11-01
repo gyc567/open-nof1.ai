@@ -97,11 +97,9 @@ export default function Home() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
+            {/* 应用主标题 */}
             <h1 className="text-4xl font-bold tracking-tight">
-              Open Nof1.ai
-              <span className="text-muted-foreground text-sm ml-2">
-                inspired by Alpha Arena
-              </span>
+              Monnaire Alpha Arena
             </h1>
             <p className="text-muted-foreground mt-2">
               Real-time trading metrics and performance
@@ -183,7 +181,7 @@ export default function Home() {
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground pt-8 border-t">
           <p>HIGHEST: 🏆 DEEPSEEK CHAT</p>
-          <p className="mt-2">nof1.ai - Real-time AI Trading Platform</p>
+          <p className="mt-2">Monnaire Alpha Arena - Real-time AI Trading Platform</p>
         </div>
       </div>
     </div>
