@@ -50,7 +50,7 @@ interface CacheConfig {
  * 价格缓存管理器
  */
 export class PriceCache {
-  private store: Map<string, CacheItem<any>> = new Map();
+  private store: Map<string, CacheItem<unknown>> = new Map();
   private config: CacheConfig;
   private stats: CacheStats;
   private cleanupTimer: NodeJS.Timeout | null = null;
@@ -237,7 +237,7 @@ export class PriceCache {
   /**
    * 检查缓存项是否过期
    */
-  private isExpired(item: CacheItem<any>): boolean {
+  private isExpired(item: CacheItem<unknown>): boolean {
     return Date.now() > item.expiresAt;
   }
 

@@ -40,9 +40,9 @@ function getAxiosConfig() {
   if (isProxyEnabled()) {
     const proxyUrl = getProxyUrl();
     if (proxyUrl) {
-      // @ts-expect-error
+      // @ts-expect-error - HttpsProxyAgent类型不匹配但功能正常
       config.httpAgent = new HttpsProxyAgent(proxyUrl);
-      // @ts-expect-error
+      // @ts-expect-error - HttpsProxyAgent类型不匹配但功能正常
       config.httpsAgent = new HttpsProxyAgent(proxyUrl);
       console.log(`🔌 Using proxy: ${proxyUrl}`);
     } else {
@@ -389,7 +389,7 @@ export class PriceAggregator {
   /**
    * 验证数据质量
    */
-  private validateData(data: any): boolean {
+  private validateData(data: Record<string, unknown>): boolean {
     try {
       // 检查所有必需字段
       const requiredCoins = ["btc", "eth", "sol", "bnb", "doge"];

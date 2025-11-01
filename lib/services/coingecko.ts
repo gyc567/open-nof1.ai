@@ -27,9 +27,9 @@ function getAxiosConfig(): AxiosRequestConfig {
   if (isProxyEnabled()) {
     const proxyUrl = getProxyUrl();
     if (proxyUrl) {
-      // @ts-expect-error
+      // @ts-expect-error - HttpsProxyAgent类型不匹配但功能正常
       config.httpAgent = new HttpsProxyAgent(proxyUrl);
-      // @ts-expect-error
+      // @ts-expect-error - HttpsProxyAgent类型不匹配但功能正常
       config.httpsAgent = new HttpsProxyAgent(proxyUrl);
       console.log(`🔌 Using proxy: ${proxyUrl}`);
     } else {
