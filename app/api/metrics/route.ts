@@ -30,13 +30,17 @@ function uniformSample<T>(data: T[], sampleSize: number): T[] {
 
 export const GET = async () => {
   try {
-    const metrics = await prisma.metrics.findFirst({
+    // Get all metrics records
+    const allMetrics = await prisma.metrics.findMany({
       where: {
         model: ModelType.Deepseek,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
-    if (!metrics) {
+    if (!allMetrics || allMetrics.length === 0) {
       return NextResponse.json({
         data: {
           metrics: [],
@@ -46,19 +50,19 @@ export const GET = async () => {
       });
     }
 
-    const databaseMetrics = metrics.metrics as unknown as {
-      createdAt: string;
-      accountInformationAndPerformance: MetricData[];
-    }[];
-
-    const metricsData = databaseMetrics
-      .map((item) => {
-        return {
-          ...item.accountInformationAndPerformance,
-          createdAt: item?.createdAt || new Date().toISOString(),
-        };
-      })
-      .filter((item) => (item as unknown as MetricData).availableCash > 0);
+    // Transform metrics data
+    const metricsData = allMetrics.map((metric) => {
+      const metricData = metric.metrics as any;
+      return {
+        totalValue: metricData.totalValue || 0,
+        unrealizedPnl: metricData.unrealizedPnl || 0,
+        availableBalance: metricData.availableBalance || 0,
+        availableCash: metricData.availableBalance || 0,
+        currentTotalReturn: ((metricData.totalValue || 30000) - 30000) / 30000,
+        positions: metricData.positions || [],
+        createdAt: metric.createdAt.toISOString(),
+      };
+    });
 
     // 均匀采样数据，最多返回 MAX_DATA_POINTS 条
     const sampledMetrics = uniformSample(metricsData, MAX_DATA_POINTS);
@@ -71,10 +75,10 @@ export const GET = async () => {
       data: {
         metrics: sampledMetrics,
         totalCount: metricsData.length,
-        model: metrics?.model || ModelType.Deepseek,
-        name: metrics?.name || "Deepseek Trading Bot",
-        createdAt: metrics?.createdAt || new Date().toISOString(),
-        updatedAt: metrics?.updatedAt || new Date().toISOString(),
+        model: allMetrics[0]?.model || ModelType.Deepseek,
+        name: allMetrics[0]?.name || "Deepseek Trading Bot",
+        createdAt: allMetrics[0]?.createdAt || new Date().toISOString(),
+        updatedAt: allMetrics[0]?.updatedAt || new Date().toISOString(),
       },
       success: true,
     });
