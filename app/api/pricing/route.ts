@@ -314,7 +314,10 @@ export const GET = async () => {
     const aggregatedData = await priceAggregator.getAggregatedPrices();
     
     // 转换数据格式以兼容现有前端
-    const pricing = transformAggregatedData(aggregatedData, aggregatedData.source);
+    const pricing = transformAggregatedData(
+      aggregatedData as unknown as Record<string, unknown>, 
+      aggregatedData.source
+    );
     
     const latency = Date.now() - startTime;
     
