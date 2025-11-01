@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { ModelType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { MetricData } from "@/lib/types/metrics";
-import { getCurrentMarketState } from "@/lib/trading/current-market-state";
+import { getCurrentMarketState } from "@/lib/trading/current-market-state.server";
 
 // 最大返回数据点数量
 const MAX_DATA_POINTS = 50;

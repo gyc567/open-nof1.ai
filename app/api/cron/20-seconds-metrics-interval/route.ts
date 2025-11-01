@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-import { getAccountInformationAndPerformance } from "@/lib/trading/account-information-and-performance";
+import { getAccountInformationAndPerformance } from "@/lib/trading/account-information-and-performance.server";
 import { prisma } from "@/lib/prisma";
 import { ModelType } from "@prisma/client";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";

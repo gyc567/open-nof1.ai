@@ -1,9 +1,9 @@
 import { generateObject } from "ai";
 import { generateUserPrompt, tradingPrompt } from "./prompt";
-import { getCurrentMarketState } from "../trading/current-market-state";
+import { getCurrentMarketState } from "../trading/current-market-state.server";
 import { z } from "zod";
 import { deepseekR1 } from "./model";
-import { getAccountInformationAndPerformance } from "../trading/account-information-and-performance";
+import { getAccountInformationAndPerformance } from "../trading/account-information-and-performance.server";
 import { prisma } from "../prisma";
 import { Opeartion, Symbol } from "@prisma/client";
 import { buy } from "../trading/buy";

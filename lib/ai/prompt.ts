@@ -1,12 +1,10 @@
 import dayjs from "dayjs";
 import {
   AccountInformationAndPerformance,
-  formatAccountPerformance,
-} from "../trading/account-information-and-performance";
-import {
-  formatMarketState,
-  MarketState,
-} from "../trading/current-market-state";
+} from "@/lib/types/account-performance";
+import { formatAccountPerformance } from "../trading/account-information-and-performance.server";
+import { MarketState } from "@/lib/types/market-state";
+import { formatMarketState } from "../trading/current-market-state.server";
 
 export const tradingPrompt = `
 You are an expert cryptocurrency analyst and trader with deep knowledge of blockchain technology, market dynamics, and technical analysis.
