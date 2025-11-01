@@ -417,12 +417,24 @@ export class PriceAggregator {
         };
       }
       
-      case "cache":
-        const cached = this.cache.get("aggregated");
-        if (!cached) {
+      case "cache": {
+        const cachedData = this.cache.get("aggregated") as { btc: BinancePrice; eth: BinancePrice; sol: BinancePrice; bnb: BinancePrice; doge: BinancePrice } | null;
+        if (!cachedData) {
           throw new Error("No cached data available");
         }
-        return cached;
+        const result: AggregatedPrice = {
+          btc: cachedData.btc,
+          eth: cachedData.eth,
+          sol: cachedData.sol,
+          bnb: cachedData.bnb,
+          doge: cachedData.doge,
+          source: "cache" as DataSource,
+          timestamp: new Date().toISOString(),
+          latency: 0,
+          isStale: true,
+        };
+        return result;
+      }
       
       default:
         throw new Error(`Unknown data source: ${source}`);
@@ -438,22 +450,24 @@ export class PriceAggregator {
       const requiredCoins = ["btc", "eth", "sol", "bnb", "doge"];
       
       for (const coin of requiredCoins) {
-        if (!data[coin] || 
-            typeof data[coin].current_price !== "number" || 
-            data[coin].current_price <= 0) {
-          console.error(`Invalid data for ${coin}:`, data[coin]);
+        const coinData = data[coin] as { current_price?: unknown; price_change_percentage_24h?: unknown };
+        if (!coinData ||
+            typeof coinData.current_price !== "number" ||
+            coinData.current_price <= 0) {
+          console.error(`Invalid data for ${coin}:`, coinData);
           return false;
         }
 
         // 检查价格合理性 (不超过1000万美元)
-        if (data[coin].current_price > 10000000) {
-          console.error(`Price too high for ${coin}: ${data[coin].current_price}`);
+        if (coinData.current_price > 10000000) {
+          console.error(`Price too high for ${coin}: ${coinData.current_price}`);
           return false;
         }
 
         // 检查24h变化幅度 (不超过100%)
-        if (Math.abs(data[coin].price_change_percentage_24h) > 100) {
-          console.error(`Change too large for ${coin}: ${data[coin].price_change_percentage_24h}%`);
+        const change24h = coinData.price_change_percentage_24h as number;
+        if (typeof change24h === "number" && Math.abs(change24h) > 100) {
+          console.error(`Change too large for ${coin}: ${change24h}%`);
           return false;
         }
       }

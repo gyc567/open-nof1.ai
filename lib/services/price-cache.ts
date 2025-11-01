@@ -128,12 +128,12 @@ export class PriceCache {
     // 更新访问统计
     item.lastAccessed = Date.now();
     item.accessCount++;
-    
+
     this.stats.hits++;
     this.updateStats();
 
     console.log(`✅ Cache hit: ${key} (accessed ${item.accessCount} times)`);
-    return item.value;
+    return item.value as T;
   }
 
   /**

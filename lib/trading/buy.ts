@@ -50,7 +50,6 @@ export async function buy({
 
     // Check risk management
     const riskCheck = await checkBuyRisk({
-      symbol,
       amount,
       leverage,
       price: currentPrice,
@@ -70,10 +69,10 @@ export async function buy({
     const result = await withRetry(
       async () => {
         // Set leverage first
-        await binance.setLeverage(normalizedSymbol, leverage);
+        await binance.setLeverage(normalizedSymbol, Number(leverage));
 
         // Create market buy order
-        const order = await binance.createMarketBuyOrder(normalizedSymbol, finalAmount);
+        const order = await binance.createMarketBuyOrder(normalizedSymbol, Number(finalAmount));
 
         // Calculate stop loss and take profit if not provided
         const finalStopLoss = stopLoss || calculateStopLossTakeProfit(currentPrice, leverage).stopLoss;
