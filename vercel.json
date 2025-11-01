@@ -1,3 +1,27 @@
 {
-  "buildCommand": "next build"
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "next dev",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/cron/*/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/pricing/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/metrics/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/model/chat/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }

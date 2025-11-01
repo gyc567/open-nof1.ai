@@ -19,6 +19,7 @@
     "@ai-sdk/deepseek": "^1.0.23",
     "@ai-sdk/openai-compatible": "^1.0.22",
     "@openrouter/ai-sdk-provider": "^1.2.0",
+    "@prisma/client": "^6.17.1",
     "@radix-ui/react-slot": "^1.2.3",
     "ai": "^5.0.76",
     "axios": "^1.13.1",
@@ -46,7 +47,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@prisma/client": "^6.17.1",
     "@tailwindcss/postcss": "^4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
