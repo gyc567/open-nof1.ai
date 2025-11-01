@@ -29,13 +29,11 @@ export const DEFAULT_RISK_LIMITS: RiskLimits = {
  * Check if a buy order meets risk management criteria
  */
 export async function checkBuyRisk({
-  symbol,
   amount,
   leverage,
   price,
   riskLimits = DEFAULT_RISK_LIMITS,
 }: {
-  symbol: string;
   amount: number;
   leverage: number;
   price: number;

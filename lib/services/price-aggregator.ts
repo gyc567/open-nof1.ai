@@ -40,9 +40,9 @@ function getAxiosConfig() {
   if (isProxyEnabled()) {
     const proxyUrl = getProxyUrl();
     if (proxyUrl) {
-      // @ts-ignore
+      // @ts-expect-error
       config.httpAgent = new HttpsProxyAgent(proxyUrl);
-      // @ts-ignore
+      // @ts-expect-error
       config.httpsAgent = new HttpsProxyAgent(proxyUrl);
       console.log(`🔌 Using proxy: ${proxyUrl}`);
     } else {
@@ -200,9 +200,10 @@ class DataSourceManager {
       this.updateLatency("coingecko", latency);
       
       return response.status === 200;
-    } catch (error: any) {
+    } catch (err: unknown) {
       this.updateLatency("coingecko", Date.now() - startTime);
-      console.error("CoinGecko health check failed:", error.message);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("CoinGecko health check failed:", message);
       return false;
     }
   }

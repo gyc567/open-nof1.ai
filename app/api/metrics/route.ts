@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ModelType } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { MetricData } from "@/lib/types/metrics";
 
 // 最大返回数据点数量
 const MAX_DATA_POINTS = 50;
@@ -52,13 +51,13 @@ export const GET = async () => {
 
     // Transform metrics data
     const metricsData = allMetrics.map((metric) => {
-      const metricData = metric.metrics as any;
+      const metricData: Record<string, unknown> = metric.metrics as Record<string, unknown>;
       return {
         totalValue: metricData.totalValue || 0,
         unrealizedPnl: metricData.unrealizedPnl || 0,
         availableBalance: metricData.availableBalance || 0,
         availableCash: metricData.availableBalance || 0,
-        currentTotalReturn: ((metricData.totalValue || 30000) - 30000) / 30000,
+        currentTotalReturn: (((metricData as Record<string, number>).totalValue || 30000) - 30000) / 30000,
         positions: metricData.positions || [],
         createdAt: metric.createdAt.toISOString(),
       };
@@ -82,8 +81,8 @@ export const GET = async () => {
       },
       success: true,
     });
-  } catch (error) {
-    console.error("Error fetching metrics:", error);
+  } catch (err) {
+    console.error("Error fetching metrics:", err);
     return NextResponse.json({
       data: {
         metrics: [],

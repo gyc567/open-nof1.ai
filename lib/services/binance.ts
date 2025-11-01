@@ -35,9 +35,9 @@ function getAxiosConfig(): AxiosRequestConfig {
   if (isProxyEnabled()) {
     const proxyUrl = getProxyUrl();
     if (proxyUrl) {
-      // @ts-ignore - axios支持httpAgent和httpsAgent
+      // @ts-expect-error - axios支持httpAgent和httpsAgent
       config.httpAgent = new HttpsProxyAgent(proxyUrl);
-      // @ts-ignore - axios支持httpAgent和httpsAgent
+      // @ts-expect-error - axios支持httpAgent和httpsAgent
       config.httpsAgent = new HttpsProxyAgent(proxyUrl);
       console.log(`🔌 Using proxy: ${proxyUrl}`);
     } else {
@@ -289,8 +289,9 @@ export async function checkBinanceHealth(): Promise<boolean> {
     }
     
     return isHealthy;
-  } catch (error: any) {
-    console.error("Binance health check failed:", error.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("Binance health check failed:", message);
     return false;
   }
 }

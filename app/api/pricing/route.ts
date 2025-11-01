@@ -331,7 +331,7 @@ export const GET = async () => {
     const healthStatus = priceAggregator.getHealthStatus();
     
     console.log("\n📊 Data Source Health Status:");
-    Object.entries(healthStatus).forEach(([source, health]: [string, any]) => {
+    Object.entries(healthStatus).forEach(([source, health]) => {
       const status = health.isHealthy ? '✅' : '❌';
       const latency = health.averageLatency?.toFixed(0) || 'N/A';
       console.log(`   ${source}: ${status} (${latency}ms, errors: ${health.errorCount})`);
