@@ -16,7 +16,6 @@ import { getProxyUrl, isProxyEnabled } from "@/lib/utils/proxy-config";
 
 // Binance REST API 端点
 const BINANCE_API_BASE = "https://api.binance.com/api/v3";
-const BINANCE_API_TESTNET = "https://testnet.binance.vision/api/v3";
 
 /**
  * 获取axios配置，支持条件性代理
@@ -35,9 +34,7 @@ function getAxiosConfig(): AxiosRequestConfig {
   if (isProxyEnabled()) {
     const proxyUrl = getProxyUrl();
     if (proxyUrl) {
-      // @ts-expect-error - axios支持httpAgent和httpsAgent
       config.httpAgent = new HttpsProxyAgent(proxyUrl);
-      // @ts-expect-error - axios支持httpAgent和httpsAgent
       config.httpsAgent = new HttpsProxyAgent(proxyUrl);
       console.log(`🔌 Using proxy: ${proxyUrl}`);
     } else {
@@ -92,7 +89,7 @@ interface BinanceTickerResponse {
 }
 
 // 标准化价格数据
-interface StandardizedPrice {
+export interface StandardizedPrice {
   current_price: number;
   price_change_24h: number;
   price_change_percentage_24h: number;
@@ -105,11 +102,16 @@ interface StandardizedPrice {
  * 验证价格数据是否有效
  */
 function isValidPriceData(data: unknown): boolean {
+  if (typeof data !== 'object' || data === null) {
+    return false;
+  }
+
+  const item = data as { lastPrice?: unknown; priceChangePercent?: unknown };
+
   return (
-    data &&
-    typeof data.lastPrice === "string" &&
-    typeof data.priceChangePercent === "string" &&
-    parseFloat(data.lastPrice) > 0
+    typeof item.lastPrice === "string" &&
+    typeof item.priceChangePercent === "string" &&
+    parseFloat(item.lastPrice) > 0
   );
 }
 
@@ -180,7 +182,6 @@ export async function fetchAllBinancePrices(): Promise<{
     const allTickers: BinanceTickerResponse[] = response.data;
 
     // 提取我们需要的交易对数据
-    const targetSymbols = Object.values(SYMBOL_MAP).map((symbol) => symbol.replace("USDT", "USDT"));
     const targetData: { [key: string]: BinanceTickerResponse } = {};
 
     allTickers.forEach((ticker) => {
@@ -198,7 +199,7 @@ export async function fetchAllBinancePrices(): Promise<{
     }
 
     // 标准化数据格式
-    const formatPrice = (ticker: BinanceTickerResponse, coinKey: string): StandardizedPrice => {
+    const formatPrice = (ticker: BinanceTickerResponse): StandardizedPrice => {
       const lastPrice = parseFloat(ticker.lastPrice);
       const priceChangePercent = parseFloat(ticker.priceChangePercent);
       const volume = parseFloat(ticker.volume);
@@ -221,11 +222,11 @@ export async function fetchAllBinancePrices(): Promise<{
     console.log(`   DOGE: $${parseFloat(targetData.DOGEUSDT.lastPrice).toFixed(4)}`);
 
     return {
-      btc: formatPrice(targetData.BTCUSDT, "btc"),
-      eth: formatPrice(targetData.ETHUSDT, "eth"),
-      sol: formatPrice(targetData.SOLUSDT, "sol"),
-      bnb: formatPrice(targetData.BNBUSDT, "bnb"),
-      doge: formatPrice(targetData.DOGEUSDT, "doge"),
+      btc: formatPrice(targetData.BTCUSDT),
+      eth: formatPrice(targetData.ETHUSDT),
+      sol: formatPrice(targetData.SOLUSDT),
+      bnb: formatPrice(targetData.BNBUSDT),
+      doge: formatPrice(targetData.DOGEUSDT),
     };
 
   } catch (error) {

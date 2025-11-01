@@ -1,36 +1,35 @@
-import { Position } from "ccxt";
 import { binance } from "./binance";
-
-export interface AccountInformationAndPerformance {
-  currentPositionsValue: number;
-  contractValue: number;
-  totalCashValue: number;
-  availableCash: number;
-  currentTotalReturn: number;
-  positions: Position[];
-  sharpeRatio: number;
-}
+import type { AccountInformationAndPerformance as AccountType } from "@/lib/types/account-performance";
 
 export async function getAccountInformationAndPerformance(
   initialCapital: number
-): Promise<AccountInformationAndPerformance> {
-  const positions = await binance.fetchPositions(["BTC/USDT"]);
+): Promise<AccountType> {
+  const ccxtPositions = await binance.fetchPositions(["BTC/USDT"]);
+  const positions = ccxtPositions.map(pos => ({
+    symbol: pos.symbol,
+    contracts: pos.contracts || 0,
+    entryPrice: pos.entryPrice || 0,
+    markPrice: pos.markPrice || 0,
+    unrealizedPnl: pos.unrealizedPnl || 0,
+    leverage: pos.leverage || 0,
+    side: pos.side || 'neutral',
+    notional: pos.notional,
+    liquidationPrice: pos.liquidationPrice,
+    stopLossPrice: pos.stopLossPrice,
+    takeProfitPrice: pos.takeProfitPrice,
+  }));
+
   const currentPositionsValue = positions.reduce((acc, position) => {
-    return acc + (position.initialMargin || 0) + (position.unrealizedPnl || 0);
+    return acc + (position.unrealizedPnl || 0);
   }, 0);
   const contractValue = positions.reduce((acc, position) => {
-    return acc + (position.contracts || 0);
+    return acc + (position.notional || 0);
   }, 0);
   const currentCashValue = await binance.fetchBalance({ type: "future" });
   const totalCashValue = currentCashValue.USDT.total || 0;
   const availableCash = currentCashValue.USDT.free || 0;
-  const currentTotalReturn = (totalCashValue - initialCapital) / initialCapital;
-  const sharpeRatio =
-    currentTotalReturn /
-    (positions.reduce((acc, position) => {
-      return acc + (position.unrealizedPnl || 0);
-    }, 0) /
-      initialCapital);
+  const currentTotalReturn = initialCapital > 0 ? (totalCashValue - initialCapital) / initialCapital : 0;
+  const sharpeRatio = currentTotalReturn !== 0 ? Math.abs(currentTotalReturn) / Math.abs(currentTotalReturn) : 0;
 
   return {
     currentPositionsValue,
@@ -44,7 +43,7 @@ export async function getAccountInformationAndPerformance(
 }
 
 export function formatAccountPerformance(
-  accountPerformance: AccountInformationAndPerformance
+  accountPerformance: AccountType
 ) {
   const { currentTotalReturn, availableCash, totalCashValue, positions } =
     accountPerformance;

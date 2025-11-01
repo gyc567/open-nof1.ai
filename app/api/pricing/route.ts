@@ -1,142 +1,49 @@
 import { NextResponse } from "next/server";
 import { priceAggregator } from "@/lib/services/price-aggregator";
 
-// Mock data for demo purposes (最终降级方案)
-const MOCK_PRICING = {
-  btc: {
-    current_price: 45234.56,
-    current_ema20: 45100.23,
-    current_macd: 45.67,
-    current_rsi: 58.3,
-    open_interest: { latest: 1234567, average: 1200000 },
-    funding_rate: 0.0001,
-    intraday: {
-      mid_prices: Array.from({ length: 10 }, (_, i) => 45200 + i * 5),
-      ema_20: Array.from({ length: 10 }, (_, i) => 45100 + i * 3),
-      macd: Array.from({ length: 10 }, (_, i) => 40 + i * 0.5),
-      rsi_7: Array.from({ length: 10 }, (_, i) => 55 + i * 0.3),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 56 + i * 0.2),
-    },
-    longer_term: {
-      ema_20: 44800.34,
-      ema_50: 44500.12,
-      atr_3: 234.56,
-      atr_14: 345.67,
-      current_volume: 1234567,
-      average_volume: 1100000,
-      macd: Array.from({ length: 10 }, (_, i) => 50 + i * 0.8),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 57 + i * 0.15),
-    },
-  },
-  eth: {
-    current_price: 2567.89,
-    current_ema20: 2550.12,
-    current_macd: 23.45,
-    current_rsi: 62.1,
-    open_interest: { latest: 876543, average: 850000 },
-    funding_rate: 0.0002,
-    intraday: {
-      mid_prices: Array.from({ length: 10 }, (_, i) => 2560 + i * 1),
-      ema_20: Array.from({ length: 10 }, (_, i) => 2545 + i * 0.8),
-      macd: Array.from({ length: 10 }, (_, i) => 20 + i * 0.3),
-      rsi_7: Array.from({ length: 10 }, (_, i) => 60 + i * 0.2),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 61 + i * 0.1),
-    },
-    longer_term: {
-      ema_20: 2520.34,
-      ema_50: 2490.56,
-      atr_3: 45.67,
-      atr_14: 56.78,
-      current_volume: 876543,
-      average_volume: 800000,
-      macd: Array.from({ length: 10 }, (_, i) => 25 + i * 0.4),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 61.5 + i * 0.1),
-    },
-  },
-  sol: {
-    current_price: 98.76,
-    current_ema20: 97.54,
-    current_macd: 1.23,
-    current_rsi: 55.5,
-    open_interest: { latest: 234567, average: 230000 },
-    funding_rate: 0.0001,
-    intraday: {
-      mid_prices: Array.from({ length: 10 }, (_, i) => 98 + i * 0.1),
-      ema_20: Array.from({ length: 10 }, (_, i) => 97.5 + i * 0.05),
-      macd: Array.from({ length: 10 }, (_, i) => 1.0 + i * 0.02),
-      rsi_7: Array.from({ length: 10 }, (_, i) => 54 + i * 0.15),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 55 + i * 0.1),
-    },
-    longer_term: {
-      ema_20: 96.34,
-      ema_50: 94.12,
-      atr_3: 2.34,
-      atr_14: 3.45,
-      current_volume: 234567,
-      average_volume: 220000,
-      macd: Array.from({ length: 10 }, (_, i) => 1.5 + i * 0.05),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 55.2 + i * 0.08),
-    },
-  },
-  doge: {
-    current_price: 0.08234,
-    current_ema20: 0.08156,
-    current_macd: 0.00045,
-    current_rsi: 52.3,
-    open_interest: { latest: 123456, average: 120000 },
-    funding_rate: 0.0001,
-    intraday: {
-      mid_prices: Array.from({ length: 10 }, (_, i) => 0.082 + i * 0.0001),
-      ema_20: Array.from({ length: 10 }, (_, i) => 0.0815 + i * 0.00005),
-      macd: Array.from({ length: 10 }, (_, i) => 0.0004 + i * 0.00001),
-      rsi_7: Array.from({ length: 10 }, (_, i) => 51 + i * 0.13),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 52 + i * 0.08),
-    },
-    longer_term: {
-      ema_20: 0.08089,
-      ema_50: 0.07934,
-      atr_3: 0.00123,
-      atr_14: 0.00189,
-      current_volume: 123456,
-      average_volume: 115000,
-      macd: Array.from({ length: 10 }, (_, i) => 0.0005 + i * 0.00002),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 52.1 + i * 0.05),
-    },
-  },
-  bnb: {
-    current_price: 321.45,
-    current_ema20: 319.87,
-    current_macd: 2.34,
-    current_rsi: 59.2,
-    open_interest: { latest: 345678, average: 340000 },
-    funding_rate: 0.0001,
-    intraday: {
-      mid_prices: Array.from({ length: 10 }, (_, i) => 321 + i * 0.2),
-      ema_20: Array.from({ length: 10 }, (_, i) => 319.8 + i * 0.15),
-      macd: Array.from({ length: 10 }, (_, i) => 2.0 + i * 0.03),
-      rsi_7: Array.from({ length: 10 }, (_, i) => 58 + i * 0.12),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 59 + i * 0.08),
-    },
-    longer_term: {
-      ema_20: 317.56,
-      ema_50: 314.23,
-      atr_3: 4.56,
-      atr_14: 6.78,
-      current_volume: 345678,
-      average_volume: 330000,
-      macd: Array.from({ length: 10 }, (_, i) => 2.5 + i * 0.06),
-      rsi_14: Array.from({ length: 10 }, (_, i) => 59.1 + i * 0.05),
-    },
-  },
-};
+// Mock data removed - now using dynamic fallback data in catch block
+
+// 类型定义
+interface CoinData {
+  current_price: number;
+  current_ema20: number;
+  current_macd: number;
+  current_rsi: number;
+  open_interest: { latest: number; average: number };
+  funding_rate: number;
+  intraday: {
+    mid_prices: number[];
+    ema_20: number[];
+    macd: number[];
+    rsi_7: number[];
+    rsi_14: number[];
+  };
+  longer_term: {
+    ema_20: number;
+    ema_50: number;
+    atr_3: number;
+    atr_14: number;
+    current_volume: number;
+    average_volume: number;
+    macd: number[];
+    rsi_14: number[];
+  };
+}
+
+interface PricingResponse {
+  btc: CoinData;
+  eth: CoinData;
+  sol: CoinData;
+  bnb: CoinData;
+  doge: CoinData;
+}
 
 /**
  * 将聚合器数据转换为标准响应格式
  */
 function transformAggregatedData(
-  aggregatedData: Record<string, unknown>,
-  source: string
-): Record<string, unknown> {
+  aggregatedData: Record<string, unknown>
+): PricingResponse {
   const { btc, eth, sol, bnb, doge } = aggregatedData as Record<string, Record<string, number>>;
 
   return {
@@ -315,8 +222,7 @@ export const GET = async () => {
     
     // 转换数据格式以兼容现有前端
     const pricing = transformAggregatedData(
-      aggregatedData as unknown as Record<string, unknown>, 
-      aggregatedData.source
+      aggregatedData as unknown as Record<string, unknown>
     );
     
     const latency = Date.now() - startTime;
@@ -324,11 +230,11 @@ export const GET = async () => {
     console.log("\n✅ Successfully fetched aggregated prices:");
     console.log(`   Data Source: ${aggregatedData.source}`);
     console.log(`   Latency: ${latency}ms`);
-    console.log(`   BTC: $${(pricing as any).btc.current_price.toLocaleString()}`);
-    console.log(`   ETH: $${(pricing as any).eth.current_price.toLocaleString()}`);
-    console.log(`   SOL: $${(pricing as any).sol.current_price.toFixed(2)}`);
-    console.log(`   BNB: $${(pricing as any).bnb.current_price.toFixed(2)}`);
-    console.log(`   DOGE: $${(pricing as any).doge.current_price.toFixed(4)}`);
+    console.log(`   BTC: $${pricing.btc.current_price.toLocaleString()}`);
+    console.log(`   ETH: $${pricing.eth.current_price.toLocaleString()}`);
+    console.log(`   SOL: $${pricing.sol.current_price.toFixed(2)}`);
+    console.log(`   BNB: $${pricing.bnb.current_price.toFixed(2)}`);
+    console.log(`   DOGE: $${pricing.doge.current_price.toFixed(4)}`);
     
     // 获取健康状态
     const healthStatus = priceAggregator.getHealthStatus();
@@ -351,10 +257,11 @@ export const GET = async () => {
       success: true,
     });
 
-  } catch (error) {
+  } catch (err) {
     const latency = Date.now() - startTime;
-    
-    console.error("\n❌ Error fetching aggregated prices:", error);
+    const errorMessage = err instanceof Error ? err.message : String(err);
+
+    console.error("\n❌ Error fetching aggregated prices:", err);
     console.log(`⏱️ Request failed after ${latency}ms`);
     console.log("📊 Falling back to mock pricing data...");
     
@@ -368,7 +275,7 @@ export const GET = async () => {
     };
     
     // 使用转换函数确保格式一致
-    const mockPricing = transformAggregatedData(mockAggregatedData, "mock");
+    const mockPricing = transformAggregatedData(mockAggregatedData);
     
     return NextResponse.json({
       data: {
@@ -376,7 +283,7 @@ export const GET = async () => {
         source: "mock",
         timestamp: new Date().toISOString(),
         latency,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: errorMessage,
       },
       success: true,
     });

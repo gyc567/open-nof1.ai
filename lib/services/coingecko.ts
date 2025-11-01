@@ -27,9 +27,7 @@ function getAxiosConfig(): AxiosRequestConfig {
   if (isProxyEnabled()) {
     const proxyUrl = getProxyUrl();
     if (proxyUrl) {
-      // @ts-expect-error - HttpsProxyAgent类型不匹配但功能正常
       config.httpAgent = new HttpsProxyAgent(proxyUrl);
-      // @ts-expect-error - HttpsProxyAgent类型不匹配但功能正常
       config.httpsAgent = new HttpsProxyAgent(proxyUrl);
       console.log(`🔌 Using proxy: ${proxyUrl}`);
     } else {
@@ -55,37 +53,6 @@ interface CoinGeckoResponse {
   [key: string]: {
     usd: number;
     usd_24h_change?: number;
-  };
-}
-
-/**
- * 从 CoinGecko API 获取单个币种价格
- */
-async function fetchCoinPrice(coinId: string) {
-  const response = await fetch(
-    `${COINGECKO_API_URL}?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`,
-    {
-      method: "GET",
-      headers: {
-        "Accept": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`CoinGecko API error: ${response.status}`);
-  }
-
-  const data: CoinGeckoResponse = await response.json();
-  const coin = data[coinId];
-
-  if (!coin) {
-    throw new Error(`No data for ${coinId}`);
-  }
-
-  return {
-    price: coin.usd,
-    change24h: coin.usd_24h_change || 0,
   };
 }
 

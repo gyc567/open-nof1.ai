@@ -13,6 +13,7 @@ interface ProxyConfig {
   httpProxy?: string;
   httpsProxy?: string;
   allProxy?: string;
+  proxyUrl?: string; // 添加proxyUrl字段
 }
 
 /**
@@ -40,15 +41,16 @@ export function getProxyConfig(): ProxyConfig {
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
   const httpProxy = process.env.HTTP_PROXY || process.env.http_proxy;
   const allProxy = process.env.ALL_PROXY || process.env.all_proxy;
-  
+
   // 优先使用HTTPS代理，其次是HTTP代理，最后是ALL代理
   const proxyUrl = httpsProxy || httpProxy || allProxy;
-  
+
   return {
     enabled: true,
     httpProxy,
     httpsProxy,
     allProxy,
+    proxyUrl, // 添加proxyUrl到返回对象
   };
 }
 

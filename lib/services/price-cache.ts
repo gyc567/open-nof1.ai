@@ -1,6 +1,6 @@
 /**
  * 价格数据缓存系统
- * 
+ *
  * 功能：
  * - 内存缓存存储
  * - TTL (Time To Live) 管理
@@ -8,8 +8,6 @@
  * - 缓存命中统计
  * - LRU (Least Recently Used) 淘汰策略
  */
-
-import { StandardizedPrice } from "./binance";
 
 // 缓存项接口
 interface CacheItem<T> {
