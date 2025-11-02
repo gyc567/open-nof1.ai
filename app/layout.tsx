@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+// import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+// 使用系统字体替代Google Fonts以避免构建时网络问题
+// const inter = Inter({
+//   variable: "--font-inter",
+//   subsets: ["latin"],
+// });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
+// const jetbrainsMono = JetBrains_Mono({
+//   variable: "--font-jetbrains-mono",
+//   subsets: ["latin"],
+// });
+
+const inter = {
+  variable: "font-inter",
+};
+
+const jetbrainsMono = {
+  variable: "font-jetbrains-mono",
+};
 
 export const metadata: Metadata = {
   title: "Create Next App",

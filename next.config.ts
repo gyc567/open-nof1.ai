@@ -77,7 +77,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'recharts'],
     // 禁用Turbopack，确保与Vercel构建一致
-    turbo: false,
+    turbo: {
+      rules: {},
+    },
   },
 };
 

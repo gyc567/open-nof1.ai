@@ -36,10 +36,10 @@ export async function sell({
         retryCondition: isRetryableError,
         maxAttempts: 3,
       }
-    );
+    ) as any;
 
     const position = positions.find(
-      (p) => p.symbol === normalizedSymbol && p.contracts && p.contracts > 0
+      (p: any) => p.symbol === normalizedSymbol && p.contracts && p.contracts > 0
     );
 
     if (!position || !position.contracts) {

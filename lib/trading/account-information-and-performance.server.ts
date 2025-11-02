@@ -5,7 +5,7 @@ export async function getAccountInformationAndPerformance(
   initialCapital: number
 ): Promise<AccountType> {
   const ccxtPositions = await binance.fetchPositions(["BTC/USDT"]);
-  const positions = ccxtPositions.map(pos => ({
+  const positions = ccxtPositions.map((pos: any) => ({
     symbol: pos.symbol,
     contracts: pos.contracts || 0,
     entryPrice: pos.entryPrice || 0,
@@ -19,10 +19,10 @@ export async function getAccountInformationAndPerformance(
     takeProfitPrice: pos.takeProfitPrice,
   }));
 
-  const currentPositionsValue = positions.reduce((acc, position) => {
+  const currentPositionsValue = positions.reduce((acc: any, position: any) => {
     return acc + (position.unrealizedPnl || 0);
   }, 0);
-  const contractValue = positions.reduce((acc, position) => {
+  const contractValue = positions.reduce((acc: any, position: any) => {
     return acc + (position.notional || 0);
   }, 0);
   const currentCashValue = await binance.fetchBalance({ type: "future" });

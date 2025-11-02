@@ -1,3 +1,6 @@
+import { EMA, MACD, RSI, ATR } from 'technicalindicators';
+import { binance } from './binance';
+
 // 客户端安全的MarketState类型定义
 export interface MarketState {
   // Current indicators
@@ -115,13 +118,13 @@ export async function getCurrentMarketState(
     );
 
     // Extract price data from 1-minute candles
-    const closes1m = ohlcv1m.map((candle) => Number(candle[4])); // Close prices
+    const closes1m = ohlcv1m.map((candle: any) => Number(candle[4])); // Close prices
 
     // Extract price data from 4-hour candles
-    const closes4h = ohlcv4h.map((candle) => Number(candle[4]));
-    const highs4h = ohlcv4h.map((candle) => Number(candle[2]));
-    const lows4h = ohlcv4h.map((candle) => Number(candle[3]));
-    const volumes4h = ohlcv4h.map((candle) => Number(candle[5]));
+    const closes4h = ohlcv4h.map((candle: any) => Number(candle[4]));
+    const highs4h = ohlcv4h.map((candle: any) => Number(candle[2]));
+    const lows4h = ohlcv4h.map((candle: any) => Number(candle[3]));
+    const volumes4h = ohlcv4h.map((candle: any) => Number(candle[5]));
 
     // Calculate intraday indicators (1-minute timeframe)
     const ema20_1m = calculateEMA(closes1m, 20);
@@ -180,7 +183,7 @@ export async function getCurrentMarketState(
 
     // Calculate average volume for 4-hour timeframe
     const averageVolume4h =
-      volumes4h.reduce((sum, vol) => sum + vol, 0) / volumes4h.length;
+      volumes4h.reduce((sum: number, vol: number) => sum + vol, 0) / volumes4h.length;
     const currentVolume4h = volumes4h[volumes4h.length - 1];
 
     return {

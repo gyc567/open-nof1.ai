@@ -38,7 +38,7 @@ export async function buy({
         retryCondition: isRetryableError,
         maxAttempts: 3,
       }
-    );
+    ) as any;
     const currentPrice = ticker.last || 0;
 
     if (currentPrice === 0) {
